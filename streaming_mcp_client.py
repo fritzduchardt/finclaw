@@ -25,6 +25,7 @@ class MCPClient:
     # methods will go here
 
     async def process_query(self, url: str, query: str) -> str:
+
         # Connect to a streamable HTTP server
         async with streamable_http_client(f"{url}") as (
                 read_stream,
@@ -37,8 +38,13 @@ class MCPClient:
 
                 await session.initialize()
                 # List available tools
-                available_tools = await session.list_tools()
-                print(f"Available tools: {[tool.name for tool in available_tools.tools]}")
+                response = await session.list_tools()
+                available_tools = [{
+                    "name": tool.name,
+                    "description": tool.description,
+                    "input_schema": tool.inputSchema
+                } for tool in response.tools]
+                print(f"Available tools: {[tool.name for tool in response.tools]}")
 
                 messages = [
                     {
@@ -78,10 +84,11 @@ class MCPClient:
                             }
                         tool_result_contents.append(content)
 
-        messages.append({
-            "role": "user",
-            "content": tool_result_contents
-        })
+        if len(tool_result_contents) > 0:
+            messages.append({
+                "role": "user",
+                "content": tool_result_contents
+            })
 
         # Get next response from Claude
         response = self.anthropic.messages.create(
