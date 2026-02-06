@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
+import os
 from mcp.server.fastmcp import FastMCP
 from social.ts import trump as t
 from finance.twelvedata import historical_data as hd
 
 # Initialize the MCP server
-mcp = FastMCP(name="StatelessServer",stateless_http=True)
+mcp = FastMCP(name="StatelessServer",stateless_http=False)
 
 @mcp.tool()
 def trump_tweets(start_date: str, end_date: str) -> str:
@@ -15,7 +16,6 @@ def trump_tweets(start_date: str, end_date: str) -> str:
         start_date: start date
         end_date: end date
     """
-    # Your existing logic here
     tweets = t.claw(start_date, end_date)
     return tweets
 
@@ -28,7 +28,6 @@ def historical_data(symbol: str, start_date: str, end_date: str) -> str:
         start_date: start date
         end_date: end date
     """
-    # Your existing logic here
     data = hd.claw(symbol, start_date, end_date)
     return data
 
