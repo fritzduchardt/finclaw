@@ -1,5 +1,5 @@
 image:
-  repository: fritzduchardt/finclaw
+  repository: ghcr.io/fritzduchardt/finclaw
   tag: "main"
 env:
   - name: RAPID
