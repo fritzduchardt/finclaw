@@ -23,11 +23,3 @@ spec:
               protocol: TCP
           env:
             {{- toYaml .Values.env | nindent 12 }}
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
