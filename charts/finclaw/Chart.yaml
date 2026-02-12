@@ -1,0 +1,6 @@
+apiVersion: v2
+name: finclaw
+description: A Helm chart for a Python application
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

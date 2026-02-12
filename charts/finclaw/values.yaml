@@ -1,0 +1,8 @@
+image:
+  repository: fritzduchardt/finclaw
+  tag: "main"
+env:
+  - name: RAPID
+    value: "<path:kv/data/finclaw#rapid>"
+  - name: TWELVE_DATA
+    value: "<path:kv/data/finclaw#twelveData>"
