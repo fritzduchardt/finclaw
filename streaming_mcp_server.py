@@ -48,4 +48,4 @@ def world_news(query: str, limit: int, country: str, time_published: str) -> str
 
 
 if __name__ == "__main__":
-    mcp.run(transport="streamable-http")
+    mcp.run(transport="streamable-http", host="0.0.0.0")
