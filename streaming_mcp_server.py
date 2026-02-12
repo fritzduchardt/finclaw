@@ -7,7 +7,7 @@ from finance.twelvedata import historical_data as hd
 from news.rapid import news_search
 
 # Initialize the MCP server
-mcp = FastMCP(name="StatelessServer",stateless_http=False)
+mcp = FastMCP(name="StatelessServer",stateless_http=False, host="0.0.0.0")
 
 @mcp.tool()
 def trump_tweets(start_date: str, end_date: str) -> str:
@@ -48,4 +48,4 @@ def world_news(query: str, limit: int, country: str, time_published: str) -> str
 
 
 if __name__ == "__main__":
-    mcp.run(transport="streamable-http", host="0.0.0.0")
+    mcp.run(transport="streamable-http")
