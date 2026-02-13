@@ -1,6 +1,7 @@
 image:
   repository: ghcr.io/fritzduchardt/finclaw
   tag: "main"
+  pullPolicy: always
 env:
   - name: RAPID
     value: "<path:kv/data/finclaw#rapid>"
