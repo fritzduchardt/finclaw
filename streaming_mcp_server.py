@@ -6,6 +6,7 @@ from social.ts import trump as t
 from finance.twelvedata import historical_data as hd
 from news.rapid import news_search
 from weather.weatherapi import weatherapi
+from knowledge.wikipedia import wikipedia as wp
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -50,7 +51,6 @@ def world_news(query: str, limit: int, country: str, time_published: str) -> str
         country: country code, e.g. US, UK, GE
         time_published: duration to the past from now in minutes, hours, days, or years, e.g. 1m, 1h, 1d, 1y.
     """
-    # Your existing logic here
     data = news_search.claw(query, limit, country, time_published)
     return data
 
@@ -62,8 +62,17 @@ def weather_forcast(city: str, days: int) -> str:
         city: Pass US Zipcode, UK Postcode, Canada Postalcode, IP address, Latitude/Longitude (decimal degree) or city name
         days: Number of days of weather forecast. Value ranges from 1 to 14
     """
-    # Your existing logic here
     data = weatherapi.claw(city, days)
+    return data
+
+@mcp.tool()
+def wikipedia(title: str) -> str:
+    """Wikipedia
+
+    Args:
+        title: page title in singular
+    """
+    data = wp.claw(title)
     return data
 
 
