@@ -4,6 +4,7 @@ version = "0.1.0"
 dependencies = [
 	"mcp[cli]>=1.26.0",
 	"pandas>=3.0.1",
+	"pymongo>=4.16.0",
 	"requests>=2.32.5",
 	"typer",
 	"yfinance>=1.2.0",

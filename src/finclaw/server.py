@@ -3,8 +3,7 @@ import os
 
 from mcp.server.fastmcp import FastMCP
 
-from .tools import register_tools
-from .finance.yfinance_claw import register_yfinance_tools
+from . import register_tools
 
 log_level = os.environ.get('LOG_LEVEL', 'INFO').upper()
 logging.basicConfig(
@@ -18,7 +17,6 @@ server_port = int(os.environ.get('PORT', '9000'))
 mcp = FastMCP(name='StatelessServer', stateless_http=False, host=server_host, port=server_port)
 
 register_tools(mcp)
-register_yfinance_tools(mcp)
 
 if __name__ == '__main__':
     mcp.run(transport='streamable-http')
