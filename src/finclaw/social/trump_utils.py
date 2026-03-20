@@ -8,25 +8,26 @@ from typing import Iterable, Tuple
 
 import requests
 import typer
+
 from ..utils import mongo
 
 TRUMP_URL = "https://www.trumpstruth.org/feed"
 app = typer.Typer(help="Trump data")
 
-@app.command()
-def print_all_truth_posts_cmd(interval_days: int = 7, earliest_date_str: str | None = None) -> None:
-    earliest_date = None
-    if earliest_date_str is not None:
-        earliest_date = datetime.strptime(earliest_date_str, "%d.%m.%Y").date()
-    print_all_truth_posts(interval_days, earliest_date)
+@app.command(name="print-all-truth-posts")
+def print_all_truth_posts_cmd(interval_days: int = 7, earliest_date: str | None = None) -> None:
+    earliest_date_obj = None
+    if earliest_date is not None:
+        earliest_date_obj = datetime.strptime(earliest_date, "%d.%m.%Y").date()
+    print_all_truth_posts(interval_days, earliest_date_obj)
 
 
-@app.command()
-def insert_all_truth_posts_cmd(interval_days: int = 7, earliest_date_str: str | None = None) -> None:
-    earliest_date = None
-    if earliest_date_str is not None:
-        earliest_date = datetime.strptime(earliest_date_str, "%d.%m.%Y").date()
-    insert_all_truth_posts(interval_days, earliest_date)
+@app.command(name="insert-all-truth-posts")
+def insert_all_truth_posts_cmd(interval_days: int = 7, earliest_date: str | None = None) -> None:
+    earliest_date_obj = None
+    if earliest_date is not None:
+        earliest_date_obj = datetime.strptime(earliest_date, "%d.%m.%Y").date()
+    insert_all_truth_posts(interval_days, earliest_date_obj)
 
 
 @app.command()
@@ -47,6 +48,7 @@ def insert_all_truth_posts(interval_days: int = 7, earliest_date: date | None = 
         insert_truth_posts(start.isoformat(), end.isoformat())
         end = start - timedelta(days=1)
 
+
 def print_all_truth_posts(interval_days: int = 7, earliest_date: date | None = None) -> None:
     if interval_days <= 0:
         raise ValueError("interval_days must be positive")
@@ -57,30 +59,21 @@ def print_all_truth_posts(interval_days: int = 7, earliest_date: date | None = N
         start = end - timedelta(days=interval_days - 1)
         if start < earliest_date:
             start = earliest_date
-        print_truth_headposts(start.isoformat(), end.isoformat())
+        print_truth_posts(start.isoformat(), end.isoformat())
         end = start - timedelta(days=1)
 
 
-def print_truth_headposts(start_date: str, end_date: str) -> None:
+def print_truth_posts(start_date: str, end_date: str) -> None:
     feed_xml = _get_xml(start_date, end_date)
-    for pub_date, title, description in _extract_items(feed_xml):
-        try:
-            date_obj = parsedate_to_datetime(pub_date)
-            date_str = date_obj.date().isoformat()
-        except (TypeError, ValueError):
-            date_str = pub_date
-        print(f"{date_str} - {title}\n\n {description}\n\n---")
+    for pub_date, title in _extract_items(feed_xml):
+        print(f"{pub_date} - {title}\n---")
 
 
 def insert_truth_posts(start_date: str, end_date: str) -> None:
     feed_xml = _get_xml(start_date, end_date)
-    for pub_date, title, description in _extract_items(feed_xml):
-        try:
-            date_obj = parsedate_to_datetime(pub_date)
-            date_str = date_obj.date().isoformat()
-        except (TypeError, ValueError):
-            date_str = pub_date
-        mongo.insert("trump", json.dumps([{"date": date_str, "title": title, "description": description}]))
+    for pub_date, title in _extract_items(feed_xml):
+        dt = parsedate_to_datetime(pub_date)
+        mongo.insert("trump", json.dumps([{"date": dt.strftime("%Y-%m-%dT%H:%M:%S.000Z"), "title": title}]))
 
 
 def _get_xml(start_date: str, end_date: str) -> str:
@@ -105,17 +98,14 @@ def _extract_items(feed_xml: str) -> Iterable[Tuple[str, str, str]]:
     items = []
     for item in root.findall(".//item"):
         title_el = item.find("title")
-        description_el = item.find("description")
         pub_date_el = item.find("pubDate")
         if title_el is None or pub_date_el is None:
             continue
         title = (title_el.text or "").strip()
         pub_date = (pub_date_el.text or "").strip()
-        description = (description_el.text or "").strip()
-        description = _strip_tags(description)
-        if title.startswith("[No Title]") or len(description) < 20:
+        if title.startswith("[No Title]") or len(title) < 20:
             continue
-        items.append((pub_date, title, description))
+        items.append((pub_date, title))
     return items
 
 

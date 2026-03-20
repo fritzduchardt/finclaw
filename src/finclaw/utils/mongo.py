@@ -42,7 +42,7 @@ def update(collection: str, filter_json: str, update_json: str) -> bool:
         return False
 
 
-def read(collection: str, filters: str) -> list[dict[str, Any]] | None:
+def read(collection: str, filters: str = "") -> list[dict[str, Any]] | None:
     logging.info(f"Reading stats for: {collection} with: {filters}")
     try:
         collection = db[collection]
